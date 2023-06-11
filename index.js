@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const port = process.env.PORT || 5000;
 
@@ -33,21 +33,69 @@ async function run() {
 
         const toyCollection = client.db("toyDB").collection("toys");
 
-        app.get('/toys', async (req, res) =>{
-            const cursor = toyCollection.find();
-            const result = await cursor.toArray();
+        // app.get('/toys', async (req, res) =>{
+        //     const cursor = toyCollection.find();
+        //     const result = await cursor.toArray();
+        //     res.send(result)
+        // })
+
+        app.get('/toys', async (req, res) => {
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await toyCollection.find(query).toArray();
             res.send(result)
+            console.log(query);
         })
 
 
-         // -------------- Add New Toy In DataBase ----------------
-         app.post('/toys', async (req, res) => {
+        // -------------- Add New Toy In DataBase ----------------
+        app.post('/toys', async (req, res) => {
             const toy = req.body;
             console.log(toy);
             const result = await toyCollection.insertOne(toy);
             res.send(result)
         })
 
+
+        // -------------- Get Updated Toys ID In DataBase ----------------
+
+        app.get('/toys/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await toyCollection.findOne(query);
+            res.send(result)
+        })
+
+        // ------------- Put Updated Toy Data in DB --------------------
+
+        app.put('/toys/:id', async(req, res) =>{
+            const id = req.params.id;
+            const toy = req.body;
+            console.log(toy);
+            const filter = {_id: new ObjectId(id)};
+            const options = { upsert: true };
+            const updatedToy = {
+                $set: {
+                    name: toy.name,
+                    email: toy.email
+                }
+            }
+
+            const result = await userCollection.updateOne(filter, updatedToy, options)
+            res.send(result)
+
+        })
+
+        // -------------- Delete Toy From DataBase ----------------
+        app.delete('/toys/:id', async(req, res) =>{
+            const id = req.params.id;
+            console.log('Delete', id);
+            const query = { _id: new ObjectId(id) };
+            const result = await toyCollection.deleteOne(query);
+            res.send(result)
+        })
 
 
 
