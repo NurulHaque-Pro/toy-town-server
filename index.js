@@ -53,13 +53,23 @@ async function run() {
             res.send(result)
         })
 
-         // -------------- Get All Toys From DataBase ----------------
+        // -------------- Get All Toys From DataBase ----------------
 
-        // app.get('/toys', async (req, res) =>{
-        //     const cursor = toyCollection.find();
-        //     const result = await cursor.toArray();
-        //     res.send(result)
-        // })
+        app.get('/toys', async (req, res) => {
+            const cursor = toyCollection.find();
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+
+        // -------------- Get Toys From By Category DataBase ----------------
+
+        app.get('/toys/:category', async (req, res) => {
+            const category = req.params.category.replace('%20', ' ');
+            const query = { category: category };
+            const result = await toyCollection.find(query).toArray();
+            res.send(result);
+          });
+          
 
         // -------------- Get Updated Toys ID In DataBase ----------------
 
@@ -72,11 +82,11 @@ async function run() {
 
         // ------------- Put Updated Toy Data in DB --------------------
 
-        app.put('/toys/:id', async(req, res) =>{
+        app.put('/toys/:id', async (req, res) => {
             const id = req.params.id;
             const toy = req.body;
             console.log(toy);
-            const filter = {_id: new ObjectId(id)};
+            const filter = { _id: new ObjectId(id) };
             const options = { upsert: true };
             const updatedToy = {
                 $set: {
@@ -92,7 +102,7 @@ async function run() {
         })
 
         // -------------- Delete Toy From DataBase ----------------
-        app.delete('/toys/:id', async(req, res) =>{
+        app.delete('/toys/:id', async (req, res) => {
             const id = req.params.id;
             console.log('Delete', id);
             const query = { _id: new ObjectId(id) };
