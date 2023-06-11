@@ -33,11 +33,6 @@ async function run() {
 
         const toyCollection = client.db("toyDB").collection("toys");
 
-        // app.get('/toys', async (req, res) =>{
-        //     const cursor = toyCollection.find();
-        //     const result = await cursor.toArray();
-        //     res.send(result)
-        // })
 
         app.get('/toys', async (req, res) => {
             let query = {};
@@ -58,6 +53,13 @@ async function run() {
             res.send(result)
         })
 
+         // -------------- Get All Toys From DataBase ----------------
+
+        // app.get('/toys', async (req, res) =>{
+        //     const cursor = toyCollection.find();
+        //     const result = await cursor.toArray();
+        //     res.send(result)
+        // })
 
         // -------------- Get Updated Toys ID In DataBase ----------------
 
@@ -78,12 +80,13 @@ async function run() {
             const options = { upsert: true };
             const updatedToy = {
                 $set: {
-                    name: toy.name,
-                    email: toy.email
+                    price: toy.price,
+                    quantity: toy.quantity,
+                    description: toy.description,
                 }
             }
 
-            const result = await userCollection.updateOne(filter, updatedToy, options)
+            const result = await toyCollection.updateOne(filter, updatedToy, options)
             res.send(result)
 
         })
