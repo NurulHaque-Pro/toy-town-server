@@ -32,6 +32,7 @@ async function run() {
 
 
         const toyCollection = client.db("toyDB").collection("toys");
+        const blogCollection = client.db("toyDB").collection("blogs");
 
 
         // // -------------- Get All Toys From DataBase ----------------
@@ -115,7 +116,13 @@ async function run() {
         })
 
 
+        // -------------- Get All Blogs From DataBase ----------------
 
+        app.get('/blogs', async (req, res) => {
+            const cursor = blogCollection.find();
+            const result = await cursor.toArray();
+            res.send(result)
+        })
 
 
 
